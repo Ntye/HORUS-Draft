@@ -1,0 +1,35 @@
+{
+  "attribution": {
+    "commits": false,
+    "pullRequests": false
+  },
+  "permissions": {
+    "allow": [
+      "Bash(./gradlew:*)",
+      "Bash(gradlew.bat:*)",
+      "Bash(git status)",
+      "Bash(git diff:*)",
+      "Bash(git log:*)",
+      "Bash(docker compose:*)"
+    ],
+    "ask": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ],
+    "deny": [
+      "Bash(git push:*)",
+      "Bash(git reset --hard:*)",
+      "Bash(git rebase:*)",
+      "Bash(rm -rf:*)",
+      "Bash(curl:*)",
+      "Bash(wget:*)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./secrets/**)",
+      "Read(./data/**)",
+      "Read(./benchmark/corpus/**)",
+      "Read(./**/world-check*.xml)",
+      "Read(./**/profile-out*/**)"
+    ]
+  }
+}

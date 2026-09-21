@@ -1,0 +1,315 @@
+<mxGraphModel dx="1422" dy="798" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1620" pageHeight="1800" math="0" shadow="0">
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="bA" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;strokeColor=none;fillColor=none;fontColor=light-dark(#6c8ebf,#6c8ebf);" value="A &#183; FORMAT  &#8212;  semantics-free, one per file type" vertex="1">
+      <mxGeometry height="24" width="520" x="80" y="20" as="geometry" />
+    </mxCell>
+    <mxCell id="bB" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;strokeColor=none;fillColor=none;fontColor=light-dark(#b85450,#b85450);" value="B &#183; SOURCE ADAPTERS  &#8212;  where meaning lives (SPI)" vertex="1">
+      <mxGeometry height="24" width="520" x="80" y="390" as="geometry" />
+    </mxCell>
+    <mxCell id="bC" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;strokeColor=none;fillColor=none;fontColor=light-dark(#d6b656,#d6b656);" value="C &#183; MAPPING  &#8212;  Tier 2 only: flat, user-supplied lists" vertex="1">
+      <mxGeometry height="24" width="560" x="80" y="705" as="geometry" />
+    </mxCell>
+    <mxCell id="bD" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;strokeColor=none;fillColor=none;fontColor=light-dark(#82b366,#82b366);" value="D &#183; CAPABILITY &#38; GATING  &#8212;  derived per load, never assumed" vertex="1">
+      <mxGeometry height="24" width="600" x="80" y="1235" as="geometry" />
+    </mxCell>
+    <mxCell id="bX" parent="1" style="text;html=1;align=left;verticalAlign=middle;fontSize=13;fontStyle=1;strokeColor=none;fillColor=none;fontColor=light-dark(#999999,#999999);" value="dashed grey = owned by horus-domain-model.drawio" vertex="1">
+      <mxGeometry height="24" width="420" x="1240" y="1460" as="geometry" />
+    </mxCell>
+    <mxCell id="NOTE" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=left;verticalAlign=top;fillColor=none;strokeColor=#999999;dashed=1;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;THE LOAD SEQUENCE&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;1. operator asserts sourceId + formatId&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;2. FixtureVerifier runs first &#8212; fail fast&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;3. stream &#8594; RawRecord &#8594; CanonicalRecord&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;4. CapabilityDeriver counts on the same pass&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;5. CapabilityGate: actual vs expectation&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;6. within tolerance &#8594; promote&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;7. outside &#8594; halt, operator confirms&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;font-size:10px;&quot;&gt;Certainty comes from measurement at the END,&lt;br/&gt;not from knowledge at the start (&#167;13.3).&lt;/p&gt;" vertex="1">
+      <mxGeometry height="230" width="290" x="1240" y="1500" as="geometry" />
+    </mxCell>
+    <mxCell id="FR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;FormatReader&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;interface &#8212; semantics-free&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ formatId: String&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ open(stream): Iterator&lt;RawRecord&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// knows nothing about watchlists&lt;/p&gt;" vertex="1">
+      <mxGeometry height="140" width="240" x="80" y="60" as="geometry" />
+    </mxCell>
+    <mxCell id="RR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;RawRecord&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;absent &#8800; empty&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ ordinal: long&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ paths: Map&lt;String, List&lt;String&gt;&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ attributes: Map&lt;String, String&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceRef: String   // line/offset&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ get(path): List&lt;String&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ isAbsent(path): boolean&lt;/p&gt;" vertex="1">
+      <mxGeometry height="175" width="250" x="360" y="60" as="geometry" />
+    </mxCell>
+    <mxCell id="FRR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;FormatReaderRegistry&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;registry &#8212; startup validation&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- readers: Map&lt;String, FormatReader&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ resolve(formatId): FormatReader&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ validateAgainst(cfg): void&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// format ASSERTED, never inferred&lt;/p&gt;" vertex="1">
+      <mxGeometry height="155" width="250" x="650" y="60" as="geometry" />
+    </mxCell>
+    <mxCell id="XML" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;XmlFormatReader&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;StAX, bounded memory&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ open(stream)&lt;/p&gt;" vertex="1">
+      <mxGeometry height="80" width="185" x="80" y="255" as="geometry" />
+    </mxCell>
+    <mxCell id="CSV" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CsvFormatReader&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;header row &#8594; paths&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ open(stream)&lt;/p&gt;" vertex="1">
+      <mxGeometry height="80" width="185" x="285" y="255" as="geometry" />
+    </mxCell>
+    <mxCell id="JSN" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;JsonFormatReader&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;streaming JSONL / array&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ open(stream)&lt;/p&gt;" vertex="1">
+      <mxGeometry height="80" width="185" x="490" y="255" as="geometry" />
+    </mxCell>
+    <mxCell id="FXW" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#6c8ebf;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;FixedWidthFormatReader&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;column spec required&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ open(stream)&lt;/p&gt;" vertex="1">
+      <mxGeometry height="80" width="205" x="695" y="255" as="geometry" />
+    </mxCell>
+    <mxCell id="WSA" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;WatchlistSourceAdapter&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;SPI &#8212; one per source&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ formatId: String&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ toCanonical(r): CanonicalRecord&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ expectation(): CapabilityExpectation&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ requiredSlots(): Set&lt;CanonicalSlot&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// SEMANTICS LIVE HERE,&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// never in configuration&lt;/p&gt;" vertex="1">
+      <mxGeometry height="200" width="255" x="80" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="AR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;AdapterRegistry&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;registry &#8212; startup validation&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- adapters: Map&lt;String, Adapter&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ resolve(sourceId): Adapter&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ register(a): void&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ validateAgainst(cfg): void   // I-7&lt;/p&gt;" vertex="1">
+      <mxGeometry height="175" width="240" x="375" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="WCA" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;WorldCheckAdapter&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;built-in &#8212; derivation, not mapping&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ toCanonical(r): CanonicalRecord&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- entityType(ei, category): EntityType&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- primaryName(first, last, type)&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// @e-i + @category &#8594; type&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// org name wholly in last_name&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// no config can express this&lt;/p&gt;" vertex="1">
+      <mxGeometry height="195" width="250" x="655" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="MSA" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MappedSourceAdapter&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;Tier 2 &#8212; config-driven&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- mapping: SourceMapping&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ toCanonical(r): CanonicalRecord&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// bind / rename / split / trim&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// NO conditionals, by design&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// needing more &#8658; write an adapter&lt;/p&gt;" vertex="1">
+      <mxGeometry height="195" width="240" x="945" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="CR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CanonicalRecord&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;partial is NORMAL&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceRecordId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ entityType: EntityType&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ names: List&lt;CanonicalName&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ dobs / countries / addresses&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ identifiers: List&lt;Identifier&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ designations / ownership&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ absentSlots: Set&lt;CanonicalSlot&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ provenance: Map&lt;Slot, String&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ has(slot): boolean&lt;/p&gt;" vertex="1">
+      <mxGeometry height="245" width="255" x="1225" y="430" as="geometry" />
+    </mxCell>
+    <mxCell id="CRB" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#b85450;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CanonicalRecordBuilder&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;builder&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ name(v, type, srcPath): Builder&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ entityType(t, srcPath): Builder&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ absent(slot, reason): Builder&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ build(): CanonicalRecord&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// requires sourceId + &#8805;1 name&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// absent &#8800; empty &#8800; unmapped&lt;/p&gt;" vertex="1">
+      <mxGeometry height="185" width="255" x="1225" y="710" as="geometry" />
+    </mxCell>
+    <mxCell id="SPF" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SourceProfiler&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;the discovery tool, reused&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ profile(reader, n): SourceProfile&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ profileFull(reader): SourceProfile&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// path inventory, coverage,&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// cardinality, sample values&lt;/p&gt;" vertex="1">
+      <mxGeometry height="160" width="240" x="80" y="745" as="geometry" />
+    </mxCell>
+    <mxCell id="SP" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SourceProfile&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;evidence, not opinion&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ recordsScanned: long&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ paths: List&lt;PathStat&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ coverage: Map&lt;String, Double&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ cardinality: Map&lt;String, Integer&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ samples: Map&lt;String, List&lt;String&gt;&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ distinctStructures: int&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&#160;&lt;/p&gt;" vertex="1">
+      <mxGeometry height="195" width="245" x="360" y="745" as="geometry" />
+    </mxCell>
+    <mxCell id="MP" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;MappingProposal&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;draft &#8212; NEVER auto-applied&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ bindings: List&lt;FieldBinding&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ evidence: Map&lt;String, String&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ unmappedSlots: Set&lt;CanonicalSlot&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ needsAdapter: boolean&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ confirmedBy: String&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// human validates canonical OUTPUT,&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// not the proposal itself&lt;/p&gt;" vertex="1">
+      <mxGeometry height="195" width="250" x="645" y="745" as="geometry" />
+    </mxCell>
+    <mxCell id="SM" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SourceMapping&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;versioned configuration &#8212; I-7&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ mappingId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ version: int&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ bindings: List&lt;FieldBinding&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ createdBy / approvedBy&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ approvedAt: Instant&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ diff(other): List&lt;Change&gt;&lt;/p&gt;" vertex="1">
+      <mxGeometry height="195" width="245" x="935" y="745" as="geometry" />
+    </mxCell>
+    <mxCell id="FB" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;FieldBinding&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourcePath: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ slot: CanonicalSlot&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ transform: BindingTransform&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ required: boolean&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&#160;&lt;/p&gt;" vertex="1">
+      <mxGeometry height="150" width="240" x="80" y="975" as="geometry" />
+    </mxCell>
+    <mxCell id="BT" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#d6b656;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;BindingTransform&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;interface &#8212; deliberately WEAK&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ transformId: String&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ apply(values): List&lt;String&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// TRIM SPLIT RENAME CONSTANT UPPER&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// no conditionals, no expressions&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// unable to express the hard cases&lt;/p&gt;" vertex="1">
+      <mxGeometry height="175" width="245" x="360" y="975" as="geometry" />
+    </mxCell>
+    <mxCell id="CD" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CapabilityDeriver&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;MEASURED, never declared&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;- counts: Map&lt;CanonicalSlot, long&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ observe(rec: CanonicalRecord): void&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ derive(total): SourceCapabilities&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// counters on a pass already made&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// costs approximately nothing&lt;/p&gt;" vertex="1">
+      <mxGeometry height="170" width="245" x="80" y="1275" as="geometry" />
+    </mxCell>
+    <mxCell id="CE" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CapabilityExpectation&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;baseline FROM MEASUREMENT&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ expected: Map&lt;Slot, Double&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ tolerance: Map&lt;Slot, Double&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ compare(actual): List&lt;Deviation&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// DOB 27%, passport 0.74%,&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// country 100%, aliases 0.72/rec&lt;/p&gt;" vertex="1">
+      <mxGeometry height="185" width="245" x="660" y="1275" as="geometry" />
+    </mxCell>
+    <mxCell id="CG" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CapabilityGate&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;promote or halt&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ evaluate(actual, expected): Decision&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ requiresOperator(d): boolean&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// within tolerance &#8594; promote&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// outside &#8594; HALT for confirmation&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// DOB 27%&#8594;0% trips immediately&lt;/p&gt;" vertex="1">
+      <mxGeometry height="200" width="250" x="945" y="1275" as="geometry" />
+    </mxCell>
+    <mxCell id="SF" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SourceFixture&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;canary for INGESTION&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ fixtureId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ rawRecords: List&lt;RawRecord&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ expected: List&lt;CanonicalRecord&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;&#160;&lt;/p&gt;" vertex="1">
+      <mxGeometry height="160" width="245" x="80" y="1495" as="geometry" />
+    </mxCell>
+    <mxCell id="FV" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;FixtureVerifier&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ verify(adapter, fixture): Result&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// runs at mapping time AND&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// on every reload&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// a mis-mapped name column&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// loads fine and screens fine&lt;/p&gt;" vertex="1">
+      <mxGeometry height="160" width="255" x="365" y="1495" as="geometry" />
+    </mxCell>
+    <mxCell id="IR" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#82b366;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;IngestionRun&lt;/b&gt;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ runId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId / formatId&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ mappingId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ listVersionId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ recordsRead / rejected&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ capabilities: SourceCapabilities&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ gateDecision: Decision&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ execute(): RunOutcome&lt;/p&gt;" vertex="1">
+      <mxGeometry height="215" width="245" x="660" y="1495" as="geometry" />
+    </mxCell>
+    <mxCell id="LV" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;ListVersion&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;existing &#8212; watchlist domain&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ listVersionId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ status: LoadStatus&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ capabilities: SourceCapabilities&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// capabilities attach HERE,&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// not to the adapter&lt;/p&gt;" vertex="1">
+      <mxGeometry height="150" width="250" x="945" y="1520" as="geometry" />
+    </mxCell>
+    <mxCell id="dWE" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;WatchEntity&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;domain model&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ entityId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceEntityId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ listVersionId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ entityType: EntityType&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ primaryName: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ status: EntityStatus&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// horus-domain-model.drawio&lt;/p&gt;" vertex="1">
+      <mxGeometry height="175" width="255" x="1225" y="935" as="geometry" />
+    </mxCell>
+    <mxCell id="dSLOT" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;CanonicalSlot&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;domain model &#8212; the seam&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;PRIMARY_NAME&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;ALIAS&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;ENTITY_TYPE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;GENDER&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;DATE_OF_BIRTH&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;COUNTRY&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;ADDRESS&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;IDENTIFIER&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;LIST_SOURCE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;STATUS&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;DESIGNATION_DATE&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;OWNERSHIP&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// one slot per domain field;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// drift must fail the build&lt;/p&gt;" vertex="1">
+      <mxGeometry height="230" width="250" x="645" y="975" as="geometry" />
+    </mxCell>
+    <mxCell id="dSC" parent="1" style="verticalAlign=top;align=left;overflow=fill;html=1;whiteSpace=wrap;fillColor=none;strokeColor=#999999;dashed=1;" value="&lt;p style=&quot;margin:0px;margin-top:4px;text-align:center;&quot;&gt;&lt;b&gt;SourceCapabilities&lt;/b&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;text-align:center;font-size:10px;&quot;&gt;&#171;domain model &#8212; on ListVersion&#187;&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ listVersionId: UUID&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ sourceId: String&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ coverage: Map&lt;Slot, Double&gt;&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ derivedAt: Instant&lt;/p&gt;&lt;hr size=&quot;1&quot; style=&quot;border-style:solid;&quot;/&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ supports(slot): boolean&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;+ supports(slot, minCoverage)&lt;/p&gt;&lt;p style=&quot;margin:0px;margin-left:4px;&quot;&gt;// 0% &#8800; unmapped &#8800; unsupported&lt;/p&gt;" vertex="1">
+      <mxGeometry height="200" width="255" x="365" y="1275" as="geometry" />
+    </mxCell>
+    <mxCell id="ie0" edge="1" parent="1" source="FR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.3;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" target="RR" value="&#171;yields&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie1" edge="1" parent="1" source="XML" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="FR" value="">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="172" y="225" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie2" edge="1" parent="1" source="CSV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="FR" value="">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie3" edge="1" parent="1" source="JSN" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="FR" value="">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie4" edge="1" parent="1" source="FXW" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="FR" value="">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie5" edge="1" parent="1" source="FRR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;strokeColor=#888888;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.7;entryDx=0;entryDy=0;" target="FR" value="&#171;resolves&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie6" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.1;exitDx=0;exitDy=0;entryX=0;entryY=0.85;entryDx=0;entryDy=0;" target="FRR" value="&#171;formatId&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="350" y="445" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie7" edge="1" parent="1" source="WCA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.4;entryDx=0;entryDy=0;" target="WSA" value="">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie8" edge="1" parent="1" source="MSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=block;endFill=0;endSize=14;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="WSA" value="">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1065" y="405" />
+          <mxPoint x="207" y="405" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie9" edge="1" parent="1" source="AR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;strokeColor=#888888;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.6;entryDx=0;entryDy=0;" target="WSA" value="&#171;resolves&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie10" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="RR" value="&#171;consumes&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="207" y="400" />
+          <mxPoint x="485" y="400" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie11" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.85;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" target="CR" value="&#171;creates&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1200" y="600" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie12" edge="1" parent="1" source="CRB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="CR" value="&#171;builds&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie13" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.95;exitDx=0;exitDy=0;entryX=0;entryY=0.3;entryDx=0;entryDy=0;" target="CRB" value="&#171;uses&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1195" y="620" />
+          <mxPoint x="1195" y="765" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie14" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.9;exitDx=0;exitDy=0;entryX=0;entryY=0.2;entryDx=0;entryDy=0;" target="CE" value="&#171;declares&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="55" y="610" />
+          <mxPoint x="55" y="1312" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie15" edge="1" parent="1" source="MSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;startArrow=diamondThin;startFill=1;startSize=12;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="SM" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1065" y="690" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie16" edge="1" parent="1" source="SM" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;startArrow=diamondThin;startFill=1;startSize=12;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.85;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" target="FB" value="1&#160;&#160;&#160;1..*">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="922" y="910" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie17" edge="1" parent="1" source="FB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="BT" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie18" edge="1" parent="1" source="FB" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.8;exitDx=0;exitDy=0;entryX=0;entryY=0.8;entryDx=0;entryDy=0;" target="dSLOT" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="625" y="1095" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie19" edge="1" parent="1" source="SPF" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="SP" value="&#171;creates&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie20" edge="1" parent="1" source="SP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="MP" value="&#171;evidence for&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie21" edge="1" parent="1" source="MP" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.4;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="SM" value="&#171;confirmed into&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie22" edge="1" parent="1" source="SPF" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.8;entryDx=0;entryDy=0;" target="RR" value="&#171;profiles&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="55" y="777" />
+          <mxPoint x="340" y="200" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie23" edge="1" parent="1" source="CD" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="CR" value="&#171;observes&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1352" y="1290" />
+          <mxPoint x="1352" y="405" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie24" edge="1" parent="1" source="CD" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="dSC" value="&#171;derives&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie25" edge="1" parent="1" source="CG" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.25;exitDx=0;exitDy=0;entryX=1;entryY=0.25;entryDx=0;entryDy=0;" target="dSC" value="&#171;compares&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie26" edge="1" parent="1" source="CG" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.6;exitDx=0;exitDy=0;entryX=1;entryY=0.6;entryDx=0;entryDy=0;" target="CE" value="&#171;against&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie27" edge="1" parent="1" source="dSC" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0;entryY=0.25;entryDx=0;entryDy=0;" target="LV" value="&#171;attached to&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="492" y="1690" />
+          <mxPoint x="920" y="1545" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie28" edge="1" parent="1" source="FV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.5;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="SF" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie29" edge="1" parent="1" source="FV" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="WSA" value="&#171;exercises&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="492" y="1235" />
+          <mxPoint x="40" y="1235" />
+          <mxPoint x="40" y="530" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie30" edge="1" parent="1" source="IR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="AR" value="&#171;resolve adapter&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="782" y="1245" />
+          <mxPoint x="495" y="1245" />
+          <mxPoint x="495" y="620" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie31" edge="1" parent="1" source="IR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.2;exitDx=0;exitDy=0;entryX=0;entryY=0.7;entryDx=0;entryDy=0;" target="CG" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie32" edge="1" parent="1" source="IR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.4;exitDx=0;exitDy=0;entryX=1;entryY=0.4;entryDx=0;entryDy=0;" target="FV" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie33" edge="1" parent="1" source="IR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.65;exitDx=0;exitDy=0;entryX=0;entryY=0.8;entryDx=0;entryDy=0;" target="LV" value="&#171;promotes&#187;">
+      <mxGeometry relative="1" as="geometry" />
+    </mxCell>
+    <mxCell id="ie34" edge="1" parent="1" source="IR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.8;exitDx=0;exitDy=0;entryX=1;entryY=0.9;entryDx=0;entryDy=0;" target="CD" value="1&#160;&#160;&#160;1">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="640" y="1680" />
+          <mxPoint x="345" y="1680" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie35" edge="1" parent="1" source="CR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;dashed=1;endArrow=open;endFill=0;endSize=8;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.4;entryDx=0;entryDy=0;" target="dWE" value="&#171;persisted as &#8212; the seam&#187;">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1510" y="552" />
+          <mxPoint x="1510" y="1005" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie36" edge="1" parent="1" source="CR" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0;exitY=0.9;exitDx=0;exitDy=0;entryX=1;entryY=0.1;entryDx=0;entryDy=0;" target="dSLOT" value="absentSlots">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="1205" y="655" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+    <mxCell id="ie37" edge="1" parent="1" source="WSA" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;jumpStyle=arc;endArrow=open;endFill=0;endSize=8;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="dSLOT" value="requiredSlots">
+      <mxGeometry relative="1" as="geometry">
+        <Array as="points">
+          <mxPoint x="207" y="955" />
+          <mxPoint x="770" y="955" />
+        </Array>
+      </mxGeometry>
+    </mxCell>
+  </root>
+</mxGraphModel>

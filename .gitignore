@@ -1,0 +1,30 @@
+# ---- build
+build/
+out/
+.gradle/
+*.class
+
+# ---- IDE
+.idea/
+*.iml
+.vscode/
+
+# ---- Claude Code personal settings (the shared one IS committed)
+.claude/settings.local.json
+
+# ---- secrets
+.env
+.env.*
+secrets/
+
+# ==========================================================
+#  NEVER COMMIT — licensed or confidential data.
+#  The real feed and anything derived from it lives OUTSIDE
+#  this repository. These rules are a backstop, not the control.
+# ==========================================================
+data/
+world-check*.xml
+*.xml.gz
+benchmark/corpus/
+**/profile-out*/
+/*.tsv

@@ -1,0 +1,45 @@
+[versions]
+java = "21"
+
+springBoot = "3.4.2"
+
+postgresql = "42.7.4"
+flyway = "10.20.1"
+
+icu4j = "75.1"
+commonsCodec = "1.17.1"
+commonsText = "1.12.0"
+
+picocli = "4.7.6"
+
+junit = "5.11.3"
+assertj = "3.26.3"
+archunit = "1.3.0"
+testcontainers = "1.20.3"
+
+owaspDependencyCheck = "11.1.0"
+
+[libraries]
+icu4j = { module = "com.ibm.icu:icu4j", version.ref = "icu4j" }
+commons-codec = { module = "commons-codec:commons-codec", version.ref = "commonsCodec" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
+
+picocli = { module = "info.picocli:picocli", version.ref = "picocli" }
+
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+junit-platform-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+testcontainers-junit-jupiter = { module = "org.testcontainers:junit-jupiter" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql" }
+
+[plugins]
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
+owasp-dependencycheck = { id = "org.owasp.dependencycheck", version.ref = "owaspDependencyCheck" }
