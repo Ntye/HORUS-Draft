@@ -1,0 +1,13 @@
+# SYNTHETIC. Header, then one case per line, TAB-separated. UNFINDABLE_LABEL is deliberately wrong so the
+# report shows how a miss is listed. Replace with the real corpus (built with Compliance) for real runs.
+query	entityType	dob	country	identifier	expected	caseClass
+Zorvan Talmesk	INDIVIDUAL	1980	EG		wc-demo-1	TRUE_MATCH
+Zorvan Talmesc	INDIVIDUAL	1980			wc-demo-1	VARIANT
+Talmesk Zorvan	INDIVIDUAL				wc-demo-1	REORDERED
+Quillon Marbrek	INDIVIDUAL				wc-demo-3	DELISTED_STILL_SCREENED
+Ostrel Vandermer	INDIVIDUAL				wc-demo-4	VARIANT
+Sahara Nile Trading Co	ORGANISATION				wc-demo-2	ORG_VARIANT
+Xyzzy Plugh Quux	INDIVIDUAL				wc-demo-1	UNFINDABLE_LABEL
+Wexler Pomfrett	INDIVIDUAL				NONE	CLEAR
+Harbin Osterfeldt	INDIVIDUAL				NONE	CLEAR
+Trading	ORGANISATION				NONE	GENERIC_WORD

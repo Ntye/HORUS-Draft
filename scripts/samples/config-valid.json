@@ -1,0 +1,25 @@
+{
+  "individualWeights": {
+    "token-sort-jaro-winkler": 0.30, "token-set-jaccard": 0.20, "phonetic-agreement": 0.25,
+    "normalised-edit-distance": 0.15, "ngram-dice": 0.10
+  },
+  "organisationWeights": {
+    "token-sort-jaro-winkler": 0.25, "token-set-jaccard": 0.30, "phonetic-agreement": 0.10,
+    "normalised-edit-distance": 0.15, "ngram-dice": 0.20
+  },
+  "genericTokens": ["trading", "group", "holdings", "company", "co", "limited", "ltd", "inc", "corp", "llc", "plc"],
+  "genericTokenWeight": 0.2,
+  "minDistinctiveWeight": 0.5,
+  "dobExact": 10.0,
+  "dobYearOnly": 5.0,
+  "dobConflict": -15.0,
+  "dobToleranceYears": 1,
+  "countryCorroboration": 5.0,
+  "countryConflict": -5.0,
+  "entityTypeMismatch": -10.0,
+  "delisted": -10.0,
+  "whitelistActive": -20.0,
+  "alertThreshold": 60,
+  "strongMatchThreshold": 80,
+  "enabledComparators": ["dob", "country", "identifier", "entity-type", "status"]
+}

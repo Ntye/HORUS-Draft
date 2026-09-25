@@ -1,14 +1,14 @@
 [versions]
 java = "21"
 
-springBoot = "3.4.2"
+springBoot = "4.1.1"
 
 postgresql = "42.7.4"
 flyway = "10.20.1"
 
-icu4j = "75.1"
+icu4j = "77.1"
 commonsCodec = "1.17.1"
-commonsText = "1.12.0"
+commonsText = "1.15.0"
 
 picocli = "4.7.6"
 

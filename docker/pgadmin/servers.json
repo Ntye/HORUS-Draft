@@ -1,0 +1,44 @@
+{
+  "Servers": {
+    "1": {
+      "Name": "HORUS - screen (read watchlist, write screenings)",
+      "Group": "HORUS local",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "horus",
+      "Username": "horus_screen",
+      "SSLMode": "prefer",
+      "Comment": "The role the screening path uses. Cannot read audit_event; cannot UPDATE or DELETE anything."
+    },
+    "2": {
+      "Name": "HORUS - audit (append-only evidence)",
+      "Group": "HORUS local",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "horus",
+      "Username": "horus_audit",
+      "SSLMode": "prefer",
+      "Comment": "INSERT and SELECT on audit_event and nothing else. Try an UPDATE: it must fail."
+    },
+    "3": {
+      "Name": "HORUS - ingest (writes watchlist and config)",
+      "Group": "HORUS local",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "horus",
+      "Username": "horus_ingest",
+      "SSLMode": "prefer",
+      "Comment": "Writes watchlist tables and config_version. Cannot read screening_* tables."
+    },
+    "4": {
+      "Name": "HORUS - admin (owner; full access - use sparingly)",
+      "Group": "HORUS local",
+      "Host": "db",
+      "Port": 5432,
+      "MaintenanceDB": "horus",
+      "Username": "horus_admin",
+      "SSLMode": "prefer",
+      "Comment": "Owns the schema and runs migrations. Use it to see everything or to draw the ERD."
+    }
+  }
+}

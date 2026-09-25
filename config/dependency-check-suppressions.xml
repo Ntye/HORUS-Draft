@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OWASP dependency-check suppressions.
+
+  CLAUDE.md §11: "A high-severity finding fails the build; suppressions need a written
+  justification in the PR." Every entry below must be defensible to Internal Audit in one
+  sentence, and must be scoped as narrowly as the tool allows: a specific artifact AND a specific
+  CVE. A blanket <cve> suppression, or one without a packageUrl, is not acceptable here.
+
+  Review these on every dependency upgrade: a suppression that outlives its reason is a hole.
+-->
+<suppressions xmlns="https://jeremylong.github.io/DependencyCheck/dependency-suppression.1.3.xsd">
+
+    <suppress>
+        <notes><![CDATA[
+            CVE-2026-78254 (CVSS 7.4) is a path-traversal flaw in APACHE ANT's ftp and scp tasks.
+            It is matched here against JaCoCo's Ant integration jar, org.jacoco.ant:0.8.14, via the
+            CPE cpe:2.3:a:apache:ant:0.8.14 -- a false match on the version number alone: Apache Ant
+            has no 0.8.x release line (it is at 1.x); 0.8.14 is JACOCO's version, and JaCoCo 0.8.14
+            is the latest release, so there is no upgrade that clears it.
+
+            Three independent reasons this is not exploitable here:
+              1. Wrong product. The artifact is JaCoCo's Ant task integration, not Apache Ant.
+              2. Build-time only. org.jacoco.ant is code-coverage tooling on the build classpath;
+                 it is never a dependency of the application and ships in no artifact.
+              3. The vulnerable feature is Ant's <ftp>/<scp> tasks fetching from a remote server.
+                 This build runs no Ant tasks at all -- coverage is driven by the Gradle jacoco
+                 plugin -- so the code path cannot be reached.
+
+            Scoped to this artifact AND this CVE: a different CVE on JaCoCo, or this CVE on a real
+            Apache Ant dependency, still fails the build.
+
+            Added 2026-09-24 (Step 11 hardening). Re-check when JaCoCo next releases.
+        ]]></notes>
+        <packageUrl regex="true">^pkg:maven/org\.jacoco/org\.jacoco\.ant@.*$</packageUrl>
+        <cve>CVE-2026-78254</cve>
+    </suppress>
+
+</suppressions>

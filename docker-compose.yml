@@ -1,6 +1,32 @@
 services:
   db:
     image: postgres:16
+    # Defaults are sized for a small shared server: shared_buffers 128MB and maintenance_work_mem
+    # 64MB, against a load of 5,990,394 records and roughly 76 million rows. These values suit a
+    # development machine with 16GB given to Docker, and matter most for CREATE INDEX, which is
+    # bound by maintenance_work_mem, and for checkpoint frequency during a bulk load.
+    #
+    # Deliberately NOT set: fsync=off or synchronous_commit=off. They would help, and they can lose
+    # committed rows on a crash -- which, while IndexReconciliation only checks that at least one
+    # version row exists (D12), would be an invisible gap in a watchlist rather than a failure.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=2GB
+      - -c
+      - effective_cache_size=6GB
+      - -c
+      - maintenance_work_mem=1GB
+      - -c
+      - work_mem=64MB
+      - -c
+      - max_wal_size=8GB
+      - -c
+      - checkpoint_timeout=15min
+      - -c
+      - wal_compression=on
+      - -c
+      - random_page_cost=1.1
     environment:
       POSTGRES_DB: horus
       POSTGRES_USER: horus_admin
@@ -9,7 +35,8 @@ services:
       HORUS_SCREEN_PASSWORD: ${HORUS_SCREEN_PASSWORD:?set HORUS_SCREEN_PASSWORD}
       HORUS_AUDIT_PASSWORD: ${HORUS_AUDIT_PASSWORD:?set HORUS_AUDIT_PASSWORD}
     ports:
-      - "5432:5432"
+      # Loopback only: a local development database must not be reachable from the network.
+      - "127.0.0.1:5432:5432"
     volumes:
       - ./docker/db-init:/docker-entrypoint-initdb.d:ro
       - horus-db-data:/var/lib/postgresql/data
@@ -19,5 +46,27 @@ services:
       timeout: 5s
       retries: 10
 
+  # Optional data-visualisation UI:  docker compose --profile tools up -d pgadmin
+  # Not started by `docker compose up -d db`. Open http://localhost:5050 (see
+  # docs/runbook/testing-guide.md). The four HORUS connections are pre-registered from
+  # docker/pgadmin/servers.json; pgAdmin asks for each role's password on first connect.
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    profiles: ["tools"]
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-horus@example.com}
+      # Set from the environment (scripts/Set-LocalEnv.ps1); never committed. pgAdmin refuses to
+      # start with an empty value, which is the intended failure.
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-}
+    ports:
+      - "127.0.0.1:5050:80"
+    volumes:
+      - ./docker/pgadmin/servers.json:/pgadmin4/servers.json:ro
+      - horus-pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      db:
+        condition: service_healthy
+
 volumes:
   horus-db-data:
+  horus-pgadmin-data:

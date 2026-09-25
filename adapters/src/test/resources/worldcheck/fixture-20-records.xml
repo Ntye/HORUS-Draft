@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Synthetic World-Check-shaped fixture. Every name, identifier, narrative and place here is
+  INVENTED (CLAUDE.md section 3: never copy a real listed name into a fixture).
+
+  The SHAPE, unlike the previous version of this file, is not invented. It was rebuilt on
+  2026-09-25 from scripts/New-FeedPathInventory.ps1 run against the real feed, which reports
+  element paths, attribute names and coverage counts and never values. The shape the earlier
+  fixture guessed at was two levels too shallow — person/first_name where the feed has
+  person/names/first_name — and because nothing loaded this file through WorldCheckAdapter, the
+  guess went unchallenged until the first real load rejected 99.83% of the feed (D12 B-6).
+
+  Structural facts this file reproduces, each of which the inventory confirmed:
+    * names nest under person/names, with aliases under person/names/aliases/alias
+    * alternative_spelling packs several spellings into one element, semicolon-separated
+    * age data nests under person/agedata, and dob is ONE value using 00 for unknown components
+    * countries, passports, locations, keywords and narrative all nest under details
+    * location carries its data in @city/@country/@state and is itself xsi:nil
+    * passport carries an issuing @country
+    * xsi:nil="true" is an asserted absence, distinct from an empty element
+
+  Category codes are the real vocabulary the inventory observed (POLITICAL INDIVIDUAL, VESSEL,
+  COUNTRY, ...); the four E-categories not seen in the head of the file (AIRCRAFT, WEBSITE, PORT,
+  ADDRESS) are exercised here on the inference recorded in WorldCheckAdapter.E_CATEGORY_TYPES.
+-->
+<records xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <!-- wc-001: baseline individual, fully populated: composed primary name, two aliases,
+       a complete date of birth, one passport, one location, one country. -->
+  <record category="INDIVIDUAL" entered="2001-04-11" sub-category="PEP" uid="wc-001" updated="2025-02-03">
+    <person ssn="" e-i="M">
+      <title xsi:nil="true"/>
+      <names>
+        <first_name>Tarek</first_name>
+        <last_name>Kassim</last_name>
+        <aliases>
+          <alias>KASSIM,Tarek</alias>
+          <alias>Tareq Kasim</alias>
+        </aliases>
+        <alternative_spelling xsi:nil="true"/>
+      </names>
+      <agedata>
+        <age xsi:nil="true"/>
+        <as_of_date xsi:nil="true"/>
+        <dob>1975-03-14</dob>
+        <deceased xsi:nil="true"/>
+      </agedata>
+    </person>
+    <details>
+      <further_information xsi:nil="true"/>
+      <passports>
+        <passport country="AE">PX1234567</passport>
+      </passports>
+      <place_of_birth>Invented City, Nowhere</place_of_birth>
+      <locations>
+        <location country="AE" city="Dubai" state="Dubai" xsi:nil="true"/>
+      </locations>
+      <countries>
+        <country>AE</country>
+      </countries>
+    </details>
+  </record>
+
+  <!-- wc-002: organisation. first_name is empty and the primary name must come from last_name
+       ALONE — never "  Northwind Holding Company" with a leading space. Two countries. -->
+  <record category="CORPORATE" entered="2003-09-02" sub-category="" uid="wc-002" updated="2024-11-30">
+    <person ssn="" e-i="E">
+      <names>
+        <first_name/>
+        <last_name>NORTHWIND HOLDING COMPANY</last_name>
+        <aliases>
+          <alias>NORTHWIND HOLDINGS</alias>
+        </aliases>
+        <alternative_spelling xsi:nil="true"/>
+      </names>
+      <agedata>
+        <age xsi:nil="true"/>
+        <as_of_date xsi:nil="true"/>
+        <dob xsi:nil="true"/>
+        <deceased xsi:nil="true"/>
+      </agedata>
+    </person>
+    <details>
+      <further_information xsi:nil="true"/>
+      <countries>
+        <country>CY</country>
+        <country>MT</country>
+      </countries>
+    </details>
+  </record>
+
+  <!-- wc-003 .. wc-008: the six E-categories that are NOT organisations (section 6). -->
+  <record category="VESSEL" entered="2005-01-01" sub-category="" uid="wc-003" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>MV INVENTED STAR</last_name></names>
+    </person>
+    <details><countries><country>PA</country></countries></details>
+  </record>
+
+  <record category="COUNTRY" entered="2005-01-02" sub-category="" uid="wc-004" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>REPUBLIC OF NOWHERE</last_name></names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <record category="AIRCRAFT" entered="2005-01-03" sub-category="" uid="wc-005" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>REGISTRATION ZZ-INV</last_name></names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <record category="WEBSITE" entered="2005-01-04" sub-category="" uid="wc-006" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>invented-example-site.test</last_name></names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <record category="PORT" entered="2005-01-05" sub-category="" uid="wc-007" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>PORT OF NOWHERE</last_name></names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <record category="ADDRESS" entered="2005-01-06" sub-category="" uid="wc-008" updated="2024-01-01">
+    <person ssn="" e-i="E">
+      <names><first_name/><last_name>12 INVENTED STREET, NOWHERE</last_name></names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <!-- wc-009: female individual with a YEAR-ONLY date of birth. "1939-00-00" is legal in the feed
+       and illegal for LocalDate: year must survive, month and day must be absent. -->
+  <record category="POLITICAL INDIVIDUAL" entered="2000-11-01" sub-category="PEP" uid="wc-009" updated="2023-05-05">
+    <person ssn="" e-i="F">
+      <names>
+        <first_name>Ilse</first_name>
+        <last_name>VANDERBERG</last_name>
+        <aliases><alias xsi:nil="true"/></aliases>
+      </names>
+      <agedata>
+        <age xsi:nil="true"/>
+        <as_of_date xsi:nil="true"/>
+        <dob>1939-00-00</dob>
+        <deceased xsi:nil="true"/>
+      </agedata>
+    </person>
+    <details>
+      <countries><country>NL</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-010: no date of birth at all, but an age with the date it was stated (section 6: age +
+       as_of_date). Gender U. -->
+  <record category="INDIVIDUAL" entered="2010-06-06" sub-category="" uid="wc-010" updated="2024-06-06">
+    <person ssn="" e-i="U">
+      <names>
+        <first_name>Mireille</first_name>
+        <last_name>OKONKWO</last_name>
+      </names>
+      <agedata>
+        <age>62</age>
+        <as_of_date>2024-01-01</as_of_date>
+        <dob xsi:nil="true"/>
+        <deceased xsi:nil="true"/>
+      </agedata>
+    </person>
+    <details>
+      <countries><country>NG</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-011: deceased, with a complete date of death. -->
+  <record category="INDIVIDUAL" entered="2002-02-02" sub-category="PEP" uid="wc-011" updated="2022-02-02">
+    <person ssn="" e-i="M">
+      <names>
+        <first_name>Aurelio</first_name>
+        <last_name>BRANCUSI</last_name>
+      </names>
+      <agedata>
+        <age xsi:nil="true"/>
+        <as_of_date xsi:nil="true"/>
+        <dob>1948-07-19</dob>
+        <deceased>2015-06-02</deceased>
+      </agedata>
+    </person>
+    <details>
+      <countries><country>RO</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-012: PARTIAL date of death, "2015-00-00". There is no LocalDate for it, so deceased must
+       come back absent rather than throwing and quarantining the record. -->
+  <record category="INDIVIDUAL" entered="2002-03-03" sub-category="" uid="wc-012" updated="2022-03-03">
+    <person ssn="" e-i="M">
+      <names>
+        <first_name>Sabino</first_name>
+        <last_name>ESTEVEZ</last_name>
+      </names>
+      <agedata>
+        <age xsi:nil="true"/>
+        <as_of_date xsi:nil="true"/>
+        <dob>1951-00-00</dob>
+        <deceased>2015-00-00</deceased>
+      </agedata>
+    </person>
+    <details>
+      <countries><country>ES</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-013: three spellings packed into one alternative_spelling element. -->
+  <record category="DIPLOMAT" entered="2004-04-04" sub-category="PEP" uid="wc-013" updated="2024-04-04">
+    <person ssn="" e-i="M">
+      <title>Dr</title>
+      <names>
+        <first_name>Yevgeni</first_name>
+        <last_name>SOLOVIEV</last_name>
+        <aliases><alias xsi:nil="true"/></aliases>
+        <alternative_spelling>SOLOVYEV,Yevgeni;SOLOVIOV,Evgeni;SOLOVEV,Yevgeny</alternative_spelling>
+      </names>
+      <agedata>
+        <dob>1963-11-05</dob>
+      </agedata>
+    </person>
+    <details>
+      <countries><country>KZ</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-014: an alias that repeats the primary name exactly, plus a genuine one. The repeat must
+       not produce a second, identical watch_name row. -->
+  <record category="INDIVIDUAL" entered="2006-06-06" sub-category="" uid="wc-014" updated="2024-07-07">
+    <person ssn="" e-i="M">
+      <names>
+        <first_name>Idrissa</first_name>
+        <last_name>TRAORE</last_name>
+        <aliases>
+          <alias>Idrissa TRAORE</alias>
+          <alias>TRAORE,Idriss</alias>
+        </aliases>
+      </names>
+      <agedata><dob xsi:nil="true"/></agedata>
+    </person>
+    <details>
+      <countries><country>ML</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-015: three passport elements, two distinct numbers and one repeat, each with an issuing
+       country. Every distinct number must become an identifier. -->
+  <record category="CRIME - FINANCIAL" entered="2008-08-08" sub-category="PEP" uid="wc-015" updated="2024-08-08">
+    <person ssn="" e-i="M">
+      <names>
+        <first_name>Hafiz</first_name>
+        <last_name>ZAHRANI</last_name>
+      </names>
+      <agedata><dob>1970-02-28</dob></agedata>
+    </person>
+    <details>
+      <passports>
+        <passport country="">QQ0099887</passport>
+        <passport country="XX">QQ0099887</passport>
+        <passport country="XX">RR1122334</passport>
+      </passports>
+      <countries><country>XX</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-016: REJECTION CASE. An @e-i the adapter does not recognise cannot be typed, and entity
+       type is a required slot — quarantine with a reason code, never a silent ORGANISATION. -->
+  <record category="INDIVIDUAL" entered="2009-09-09" sub-category="" uid="wc-016" updated="2024-09-09">
+    <person ssn="" e-i="Z">
+      <names>
+        <first_name>Unmappable</first_name>
+        <last_name>RECORD</last_name>
+      </names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <!-- wc-017: REJECTION CASE. No @e-i at all. -->
+  <record category="INDIVIDUAL" entered="2009-10-10" sub-category="" uid="wc-017" updated="2024-10-10">
+    <person ssn="">
+      <names>
+        <first_name>Untyped</first_name>
+        <last_name>RECORD</last_name>
+      </names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <!-- wc-018: no first_name and no last_name, but aliases are present. The record BUILDS, with
+       PRIMARY_NAME asserted absent — which is what makes it rejectable on required slots rather
+       than quietly ingested as an alias-only entity. 10,460 of these reached the database on the
+       first real load, and an entity with no primary name is a recall hole (D12 B-6). -->
+  <record category="INDIVIDUAL" entered="2011-01-01" sub-category="" uid="wc-018" updated="2024-01-11">
+    <person ssn="" e-i="M">
+      <names>
+        <first_name xsi:nil="true"/>
+        <last_name xsi:nil="true"/>
+        <aliases>
+          <alias>ONLY,An Alias</alias>
+        </aliases>
+      </names>
+    </person>
+    <details><countries><country>XX</country></countries></details>
+  </record>
+
+  <!-- wc-019: organisation whose narrative carries a designation and an a.k.a. -->
+  <record category="ORGANISATION" entered="2001-07-07" sub-category="" uid="wc-019" updated="2023-07-07">
+    <person ssn="" e-i="E">
+      <names>
+        <first_name/>
+        <last_name>INVENTED RELIEF FOUNDATION</last_name>
+      </names>
+    </person>
+    <details>
+      <further_information>[USA SANCTIONS - OFAC] SDN Ref No 0000 - SDGT (Jan 2004 - addition). PRIMARY NAME: INVENTED RELIEF FOUNDATION (a.k.a. IRF TRUST). [SANCTIONS HISTORY] OFAC (Jan 2004 - ).</further_information>
+      <countries><country>XX</country></countries>
+    </details>
+  </record>
+
+  <!-- wc-020: several location elements and a nil country among real ones. RawRecord keeps
+       attributes in a flat map, so the LAST location's attributes are the ones that survive —
+       asserted here so the limitation is visible rather than assumed away. -->
+  <record category="POLITICAL INDIVIDUAL" entered="2012-12-12" sub-category="PEP" uid="wc-020" updated="2024-12-12">
+    <person ssn="" e-i="F">
+      <names>
+        <first_name>Beatrix</first_name>
+        <last_name>NDLOVU</last_name>
+      </names>
+      <agedata><dob>1966-04-02</dob></agedata>
+    </person>
+    <details>
+      <locations>
+        <location country="ZA" city="Pretoria" state="Gauteng" xsi:nil="true"/>
+        <location country="GB" city="London" state="Greater London" xsi:nil="true"/>
+      </locations>
+      <countries>
+        <country>ZA</country>
+        <country xsi:nil="true"/>
+      </countries>
+    </details>
+  </record>
+
+</records>

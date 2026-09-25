@@ -166,7 +166,7 @@ produces a primary name from `last_name` alone.
 **Prompt**
 > Implement the ingestion interactors in `horus.application.ingestion`:
 > `LoadWatchlistVersion`, `ReconcileVersion`, `PromoteListVersion`,
-> `RollBackVersion`, `ConfirmAnomalousDelta`, `VerifySourceFixture`, plus
+> `RollBackVersion`, `ConfirmStagedVersion`, `VerifySourceFixture`, plus
 > `CapabilityDeriver` and `CapabilityGate`. Define the output ports they need in
 > `horus.application.port`; implement them in `horus.adapter.persistence`.
 >

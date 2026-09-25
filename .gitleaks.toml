@@ -1,0 +1,21 @@
+# CLAUDE.md §11: CI fails on a high-severity finding; a suppression needs a written justification.
+# Keep this file to the narrowest possible rules -- every entry below must be explainable to Internal
+# Audit in one sentence.
+title = "HORUS gitleaks configuration"
+
+[extend]
+useDefault = true
+
+# JUSTIFICATION (Step 11 hardening, 2026-09-24): the specification's API-design section shows a
+# sample request header, "Idempotency-Key: <uuid>", with a made-up UUID. It matches the generic
+# api-key rule by shape only; it is documentation, not a credential, and grants nothing.
+# Both the path AND the pattern must match, so a real secret anywhere else in that file -- or any
+# other Idempotency-Key elsewhere in the repository -- is still reported.
+[[allowlists]]
+description = "Sample Idempotency-Key header in the specification's API example"
+condition = "AND"
+# Match against the whole line: the default target (the extracted secret) is just the UUID and is
+# treated differently between working-tree and history scans.
+regexTarget = "line"
+paths = ['''docs/spec/Project_Context\.md''']
+regexes = ['''Idempotency-Key:\s*[0-9a-fA-F]{8}(-[0-9a-fA-F]{4}){3}-[0-9a-fA-F]{12}''']
