@@ -10,7 +10,10 @@ import horus.application.port.WatchEntityVersionAggregate;
 import horus.application.port.WatchEntityVersionWriter;
 import horus.domain.audit.ActorKind;
 import horus.domain.listversion.ListVersion;
+import horus.domain.listversion.ApprovalMode;
+import horus.domain.listversion.LoadApproval;
 import horus.domain.listversion.LoadStatus;
+import horus.domain.listversion.ReviewState;
 import horus.domain.listversion.SourceCapabilities;
 import horus.domain.shared.CanonicalSlot;
 import horus.domain.shared.EntityId;
@@ -139,7 +142,8 @@ public final class LoadWatchlistVersion {
             String sourceFileName,
             String sourceFileChecksum,
             Optional<Instant> vendorPublishedAt,
-            String loadedBy) {
+            String loadedBy,
+            ApprovalMode approvalMode) {
 
         public Command {
             if (sourceId == null || sourceId.isBlank()) {
@@ -160,6 +164,11 @@ public final class LoadWatchlistVersion {
             if (loadedBy == null || loadedBy.isBlank()) {
                 throw new IllegalArgumentException("loadedBy must not be blank");
             }
+            if (approvalMode == null) {
+                // Never inferred. A caller that does not say gets the closed behaviour, and must
+                // say so explicitly to get anything else (I-1).
+                throw new IllegalArgumentException("approvalMode must not be null (use ApprovalMode.REQUIRED)");
+            }
         }
     }
 
@@ -167,7 +176,14 @@ public final class LoadWatchlistVersion {
             Outcome outcome,
             ListVersionId listVersionId,
             ReconciliationReport reconciliationReport,
-            Optional<String> failureReason) {
+            Optional<String> failureReason,
+            Optional<String> reviewNote) {
+
+        public Result(
+                Outcome outcome, ListVersionId listVersionId, ReconciliationReport report,
+                Optional<String> failureReason) {
+            this(outcome, listVersionId, report, failureReason, Optional.empty());
+        }
     }
 
     public Result execute(Command command) {
@@ -194,7 +210,8 @@ public final class LoadWatchlistVersion {
                 listVersionId, command.sourceId(), adapter.formatId(), Optional.empty(),
                 command.sourceFileName(), command.sourceFileChecksum(), command.vendorPublishedAt(),
                 loadedAt, 0L, LoadStatus.STAGED, command.loadedBy(), Optional.empty(),
-                normalisationPipeline.pipelineVersion(), Optional.empty()));
+                normalisationPipeline.pipelineVersion(), Optional.empty(),
+                approvalOf(command.approvalMode())));
 
         Map<String, ActiveEntitySnapshot> activeSnapshot = activeEntityVersionLookup.loadActiveSnapshot(command.sourceId());
         CanonicalRecordMapper mapper = new CanonicalRecordMapper(normalisationPipeline, idGenerator);
@@ -434,19 +451,42 @@ public final class LoadWatchlistVersion {
         //
         // Still closed by default (I-1): STAGED does not screen, the previous ACTIVE version keeps
         // serving, and only ConfirmStagedVersion can promote it -- with a recorded reason.
+        Optional<String> waivedDeviations = Optional.empty();
         CapabilityGate gate = CapabilityGate.evaluate(adapter.expectation(), capabilityDeriver.derive());
         if (!gate.passes()) {
+            String deviations = "measured capabilities fell outside tolerance: " + gate.deviations();
+            if (command.approvalMode() == ApprovalMode.REQUIRED) {
+                recordAuditEvent.execute(new RecordAuditEvent.Command(
+                        "CAPABILITY_DEVIATION_AWAITING_CONFIRMATION", command.loadedBy(), ActorKind.SYSTEM,
+                        "ListVersion", listVersionId.value().toString(),
+                        Map.of("deviations", String.valueOf(gate.deviations().size())),
+                        Optional.empty()));
+                return new Result(Outcome.AWAITING_CONFIRMATION, listVersionId, report,
+                        Optional.of(deviations));
+            }
+            // Unattended: a scheduled load cannot wait for anyone, so the decision moves from
+            // before promotion to after it. The load promotes and is marked as OWING a review --
+            // which is the whole point of the mode, and why the waiver is a durable row rather
+            // than only a log line. It still cannot waive an integrity failure: every one of
+            // those returned above, before this branch is reached.
             recordAuditEvent.execute(new RecordAuditEvent.Command(
-                    "CAPABILITY_DEVIATION_AWAITING_CONFIRMATION", command.loadedBy(), ActorKind.SYSTEM,
+                    "CAPABILITY_DEVIATION_WAIVED", command.loadedBy(), ActorKind.SYSTEM,
                     "ListVersion", listVersionId.value().toString(),
-                    Map.of("deviations", String.valueOf(gate.deviations().size())),
+                    Map.of("deviations", String.valueOf(gate.deviations().size()),
+                            "approvalMode", ApprovalMode.NOT_REQUIRED.name(),
+                            "reviewState", ReviewState.PENDING.name()),
                     Optional.empty()));
-            return new Result(Outcome.AWAITING_CONFIRMATION, listVersionId, report,
-                    Optional.of("measured capabilities fell outside tolerance: " + gate.deviations()));
+            listVersionRepository.updateReviewState(listVersionId, ReviewState.PENDING);
+            waivedDeviations = Optional.of(deviations);
         }
 
         // A source's first-ever load has no baseline to be anomalous relative to -- only a
         // change against an existing active version can be "too large".
+        //
+        // NOT affected by approvalMode, deliberately. A change over 20% of the active list is the
+        // signature of a truncated or corrupt delivery, and promoting one writes tombstones that
+        // I-6 makes permanent -- you can move the active pointer back, but the tombstones stay in
+        // history. An unattended load may waive a shape drift; it may not waive this.
         boolean isFirstEverLoadForSource = activeSnapshot.isEmpty();
         if (!isFirstEverLoadForSource && report.deltaFraction(activeSnapshot.size()) > ANOMALOUS_DELTA_FRACTION) {
             recordAuditEvent.execute(new RecordAuditEvent.Command(
@@ -457,7 +497,7 @@ public final class LoadWatchlistVersion {
 
         promoteListVersion.execute(
                 new PromoteListVersion.Command(listVersionId, command.sourceId(), command.loadedBy()));
-        return new Result(Outcome.PROMOTED, listVersionId, report, Optional.empty());
+        return new Result(Outcome.PROMOTED, listVersionId, report, Optional.empty(), waivedDeviations);
     }
 
     // The deepest cause's CLASS NAME, never its message. A JDBC message quotes the statement and
@@ -465,6 +505,10 @@ public final class LoadWatchlistVersion {
     // (I-11); a class name says enough to tell a constraint violation from a lost connection.
     // Reached through getCause() alone, because horus.application may not import java.sql or
     // Spring (ArchUnit rule 1) and so cannot read an SQLState.
+    private static LoadApproval approvalOf(ApprovalMode mode) {
+        return mode == ApprovalMode.REQUIRED ? LoadApproval.required() : LoadApproval.unattended();
+    }
+
     private static String persistenceReason(RuntimeException e) {
         if (e instanceof RecordPersistenceException persistence) {
             return "PERSIST_FAILED:" + persistence.reasonCode();

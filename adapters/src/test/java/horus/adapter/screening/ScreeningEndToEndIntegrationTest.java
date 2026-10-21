@@ -6,6 +6,7 @@ import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import horus.domain.listversion.ApprovalMode;
 import horus.adapter.index.CoLocatedIndexAdapter;
 import horus.adapter.persistence.JdbcActiveEntityVersionLookup;
 import horus.adapter.persistence.JdbcActiveListVersionLookup;
@@ -229,7 +230,7 @@ class ScreeningEndToEndIntegrationTest extends PostgresIntegrationSupport {
             byte[] firstList = listOf("Zorvan Talmesk", "Quillon Marbrek", "Harbin Osterfeld", "Ostrel Vandermere");
             var loaded = load.execute(new LoadWatchlistVersion.Command(SOURCE_ID,
                     new ByteArrayInputStream(firstList), "e2e-1.xml", checksumOf(firstList), Optional.empty(),
-                    "svc-e2e"));
+                    "svc-e2e", ApprovalMode.REQUIRED));
             assertThat(loaded.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.PROMOTED);
 
             // ---- wire the screening side on the screen role ----
@@ -306,7 +307,7 @@ class ScreeningEndToEndIntegrationTest extends PostgresIntegrationSupport {
             byte[] secondList = listOf("Zorvan Talmesk", "Harbin Osterfeld", "Ostrel Vandermere");
             var reloaded = load.execute(new LoadWatchlistVersion.Command(SOURCE_ID,
                     new ByteArrayInputStream(secondList), "e2e-2.xml", checksumOf(secondList), Optional.empty(),
-                    "svc-e2e"));
+                    "svc-e2e", ApprovalMode.REQUIRED));
             assertThat(reloaded.reconciliationReport().delisted()).isEqualTo(1);
 
             var delisted = screen.execute(new ScreenAName.Command("e2e-test", Optional.empty(), "e2e",

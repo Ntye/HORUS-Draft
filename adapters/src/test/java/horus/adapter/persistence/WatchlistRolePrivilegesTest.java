@@ -125,6 +125,58 @@ class WatchlistRolePrivilegesTest extends PostgresIntegrationSupport {
         }
     }
 
+    // V8 added review_state and granted horus_ingest UPDATE on that column alone. Writing the
+    // GRANT is not the same as having it: AcknowledgeLoadReview runs this statement on the ingest
+    // role's connection in production, and a missing grant would surface there, not here.
+    // approval_mode is deliberately NOT updatable -- how a load was authorised is a fact about
+    // the load, settled when it was invoked, and nothing may rewrite it afterwards.
+    @Test
+    void ingestRoleCanUpdateReviewStateButNotHowTheLoadWasAuthorised() throws Exception {
+        UUID listVersionId = UUID.randomUUID();
+
+        try (Connection ingest = connectAs("horus_ingest", INGEST_PASSWORD)) {
+            insertListVersion(ingest, listVersionId);
+
+            try (PreparedStatement update = ingest.prepareStatement(
+                    "UPDATE list_version SET review_state = 'ACKNOWLEDGED' WHERE list_version_id = ?")) {
+                update.setObject(1, listVersionId);
+                assertThat(update.executeUpdate()).isEqualTo(1);
+            }
+
+            SQLException failure = catchThrowableOfType(SQLException.class, () -> {
+                try (PreparedStatement update = ingest.prepareStatement(
+                        "UPDATE list_version SET approval_mode = 'NOT_REQUIRED' "
+                                + "WHERE list_version_id = ?")) {
+                    update.setObject(1, listVersionId);
+                    update.executeUpdate();
+                }
+            });
+            assertThat((Throwable) failure).isNotNull();
+            assertThat(failure.getSQLState()).isEqualTo(INSUFFICIENT_PRIVILEGE);
+        }
+    }
+
+    // The CHECK constraints are the last line: a typo in any layer above becomes a rejected row
+    // rather than a silently meaningless value.
+    @Test
+    void anUnknownApprovalModeOrReviewStateIsRejectedByTheDatabase() throws Exception {
+        UUID listVersionId = UUID.randomUUID();
+
+        try (Connection ingest = connectAs("horus_ingest", INGEST_PASSWORD)) {
+            insertListVersion(ingest, listVersionId);
+
+            SQLException failure = catchThrowableOfType(SQLException.class, () -> {
+                try (PreparedStatement update = ingest.prepareStatement(
+                        "UPDATE list_version SET review_state = 'MAYBE' WHERE list_version_id = ?")) {
+                    update.setObject(1, listVersionId);
+                    update.executeUpdate();
+                }
+            });
+            assertThat((Throwable) failure).isNotNull();
+            assertThat(failure.getMessage()).contains("list_version_review_state_check");
+        }
+    }
+
     private static void insertListVersion(Connection connection, UUID listVersionId) throws SQLException {
         try (PreparedStatement insert = connection.prepareStatement(
                 "INSERT INTO list_version (list_version_id, source_id, format_id, "

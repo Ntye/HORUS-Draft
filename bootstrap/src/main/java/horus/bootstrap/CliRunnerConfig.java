@@ -1,5 +1,6 @@
 package horus.bootstrap;
 
+import horus.adapter.cli.AcknowledgeReviewCommand;
 import horus.adapter.cli.BenchmarkCommand;
 import horus.adapter.cli.ConfirmCommand;
 import horus.adapter.cli.HorusCommand;
@@ -31,11 +32,13 @@ public class CliRunnerConfig {
             PublishConfigCommand publishConfigCommand,
             ScreenCommand screenCommand,
             ShowScreeningCommand showScreeningCommand,
-            BenchmarkCommand benchmarkCommand) {
+            BenchmarkCommand benchmarkCommand,
+            AcknowledgeReviewCommand acknowledgeReviewCommand) {
         return args -> {
             CommandLine cli = new CommandLine(new HorusCommand())
                     .addSubcommand("ingest", ingestCommand)
                     .addSubcommand("confirm", confirmCommand)
+                    .addSubcommand("acknowledge-review", acknowledgeReviewCommand)
                     .addSubcommand("rollback", rollbackCommand)
                     .addSubcommand("measure-blocking", measureBlockingCommand)
                     .addSubcommand("publish-config", publishConfigCommand)

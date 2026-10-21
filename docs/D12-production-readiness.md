@@ -285,14 +285,39 @@ verifies that person approved it. Segregation of duties is enforced for *data* b
 **To close:** an approval step with a distinct identity (part of the descoped admin surface), or an
 interim documented control — e.g. only a named release process may run `publish-config`.
 
-### H-6 Latency at real scale is unproven, and the trigram path is the risk
-The KPI is p95 ≤ 500 ms (spec §31). At 500k entities — 12× smaller than the real feed — trigram
-blocking alone took 216–340 ms at threshold 0.3, and the cost scales with the number of matching
-rows. The other two strategies are sub-millisecond.
-**To close:** measure on the real load. Levers, in order: raise the threshold to the lowest value
-meeting Compliance's blocking-recall floor; push the entity-status join after the trigram filter;
-partition or pre-filter by entity type. **Do not raise the threshold without measuring the recall
-it costs.**
+### H-6 Latency at real scale — MEASURED 2026-09-27, and the KPI is missed
+The KPI is p95 ≤ 500 ms, p99 ≤ 1 s for single-name synchronous screening (NFR-001, spec §31).
+Measured on the promoted full list — 5,990,394 entities, 10,570,243 names, 3.1 GB of `watch_name`
+indexes — with an invented high-fanout probe name, warm cache, nothing else running:
+
+| Strategy | Warm latency |
+|---|---|
+| `EXACT_HASH` | 0.5 ms |
+| `PHONETIC` | 6.3 ms (237.9 ms cold) |
+| `TRIGRAM` @ 0.30 **as shipped** | **1,444 ms** |
+| `TRIGRAM` @ 0.40 | 779 ms |
+| `TRIGRAM` @ 0.50 | 493 ms |
+| `TRIGRAM` @ 0.60 | 308 ms |
+
+**At the shipped threshold the trigram strategy alone is 2.9× the whole p95 budget**, before scoring,
+persistence or any concurrency. A rare high-entropy name at 0.45 took 85 ms, so this is specific to
+common name patterns — the ones a screening system can least afford to be slow on.
+
+**One lever is now struck off.** "Push the entity-status join after the trigram filter" was measured
+and is wrong: removing the screenability join entirely saves nothing (1,483 ms), and applying it after
+the trigram top-N is 21% *slower* (1,744 ms) because the CTE materialises and loses the parallel plan.
+The cost is the trigram scan itself — 37,410 rows fetched from a 7.2 GB heap with `similarity()`
+computed on each. ADR-003 records the numbers.
+
+**To close:** the threshold is the only measured lever and it trades directly against recall, so it
+cannot be moved until the recall curve exists (B-1). Two untried levers cost no recall at all and
+should be tested first: (a) blocking is a **union**, so recall lost at a higher trigram threshold may
+be recovered by `EXACT_HASH` and `PHONETIC` at 0.5 ms and 6.3 ms — `MeasureBlockingRecall` already
+reports per-strategy recall, which is exactly what settles it; (b) `shared_buffers` is 2 GB against
+3.1 GB of indexes on a 7.2 GB table, on a 31.5 GB host, and the dominant cost is the bitmap heap
+fetch. **Do not raise the threshold to meet the latency KPI before the recall curve exists** — that
+buys a measured number with an unmeasured one, in the direction I-2 calls a regulatory breach rather
+than a cost.
 
 ### H-7 CI has never executed
 The workflow exists and third-party actions are now SHA-pinned, but no push has run it. All three

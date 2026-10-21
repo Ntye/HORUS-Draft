@@ -10,7 +10,9 @@ import horus.application.ingestion.testsupport.FakeListVersionRepository;
 import horus.application.ingestion.testsupport.FakeWatchEntityRepository;
 import horus.application.ingestion.testsupport.FakeWatchEntityVersionWriter;
 import horus.application.port.WatchEntityVersionAggregate;
+import horus.domain.listversion.ApprovalMode;
 import horus.domain.listversion.LoadStatus;
+import horus.domain.listversion.ReviewState;
 import horus.domain.shared.CanonicalSlot;
 import horus.domain.shared.EntityId;
 import horus.domain.shared.EntityType;
@@ -215,8 +217,13 @@ class LoadWatchlistVersionTest {
     }
 
     private static LoadWatchlistVersion.Command command(TestHarness h, String checksum) {
+        return command(h, checksum, ApprovalMode.REQUIRED);
+    }
+
+    private static LoadWatchlistVersion.Command command(TestHarness h, String checksum, ApprovalMode mode) {
         return new LoadWatchlistVersion.Command(
-                SOURCE_ID, InputStream.nullInputStream(), "fixture.xml", checksum, Optional.empty(), "svc-ingest");
+                SOURCE_ID, InputStream.nullInputStream(), "fixture.xml", checksum, Optional.empty(),
+                "svc-ingest", mode);
     }
 
     @Test
@@ -584,6 +591,111 @@ class LoadWatchlistVersionTest {
                 .isEqualTo(LoadStatus.ACTIVE);
         assertThat(h.auditEventPort().recorded())
                 .anySatisfy(e -> assertThat(e.eventType()).isEqualTo("STAGED_VERSION_CONFIRMED"));
+    }
+
+    // --------------------------------------------------------------------------------------------
+    // Unattended loads. A daily scheduled ingest cannot wait for a human, so --approval=NOT_REQUIRED
+    // moves the decision from BEFORE promotion to AFTER it. These tests exist mostly to pin down
+    // what it must NOT be able to waive, because that is where the danger is.
+    // --------------------------------------------------------------------------------------------
+
+    @Test
+    void anUnattendedLoadWaivesACapabilityDeviationPromotesAndOwesAReview() {
+        TestHarness h = harness();
+        LoadWatchlistVersion interactor = withRecords(h, List.of(
+                record(1, "e-1", "Ahmed Yousef"),
+                record(2, "e-2", "Sara Ali")), expectingDobOnEveryRecord());
+
+        LoadWatchlistVersion.Result result =
+                interactor.execute(command(h, "sha256:unattended", ApprovalMode.NOT_REQUIRED));
+
+        assertThat(result.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.PROMOTED);
+        assertThat(h.listVersionRepository().findById(result.listVersionId()).orElseThrow().status())
+                .isEqualTo(LoadStatus.ACTIVE);
+        // The waiver is a durable fact on the load, not just a log line.
+        assertThat(h.listVersionRepository().findById(result.listVersionId()).orElseThrow()
+                        .approval().reviewState())
+                .isEqualTo(ReviewState.PENDING);
+        assertThat(result.reviewNote()).isPresent();
+        assertThat(result.reviewNote().orElseThrow()).contains("DATE_OF_BIRTH");
+        assertThat(h.auditEventPort().recorded())
+                .anySatisfy(e -> assertThat(e.eventType()).isEqualTo("CAPABILITY_DEVIATION_WAIVED"));
+    }
+
+    // The flag must never promote a load whose DATA is in doubt. A reject fraction over 5% is an
+    // integrity failure, not a judgement, and no invocation mode may turn it into a promotion (I-1).
+    @Test
+    void anUnattendedLoadStillFailsOnTheRejectFraction() {
+        TestHarness h = harness();
+        List<RawRecord> records = java.util.stream.IntStream.rangeClosed(1, 100)
+                .mapToObj(i -> record(i, "e-" + i, "Name " + i))
+                .toList();
+        LoadWatchlistVersion interactor = withRecords(h, records, failsToMapUnless("e-1"));
+
+        LoadWatchlistVersion.Result result =
+                interactor.execute(command(h, "sha256:mostly-bad", ApprovalMode.NOT_REQUIRED));
+
+        assertThat(result.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.REJECTED);
+        assertThat(h.listVersionRepository().findActive(SOURCE_ID)).isEmpty();
+    }
+
+    // Nor may it promote a load whose version rows went missing.
+    @Test
+    void anUnattendedLoadStillFailsOnTheVersionRowCountCheck() {
+        TestHarness h = harness();
+        h.watchEntityVersionWriter().loseWrites(1);
+        LoadWatchlistVersion interactor = withRecords(h, List.of(
+                record(1, "e-1", "Ahmed Yousef"),
+                record(2, "e-2", "Sara Ali")));
+
+        LoadWatchlistVersion.Result result =
+                interactor.execute(command(h, "sha256:lost-row", ApprovalMode.NOT_REQUIRED));
+
+        assertThat(result.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.REJECTED);
+        assertThat(h.listVersionRepository().findActive(SOURCE_ID)).isEmpty();
+    }
+
+    // THE important one. A change over 20% of the active list is the signature of a truncated
+    // delivery, and promoting it writes tombstones that I-6 makes permanent. An unattended load may
+    // waive a shape drift; it may not waive this.
+    @Test
+    void anUnattendedLoadStillHoldsForAnAnomalousDelta() {
+        TestHarness h = harness();
+        withRecords(h, List.of(
+                record(1, "e-1", "Ahmed Yousef"),
+                record(2, "e-2", "Sara Ali"),
+                record(3, "e-3", "Nadia Haddad"))).execute(command(h, "sha256:baseline"));
+        registerAsActive(h);
+
+        // One of three entities gone: a 33% delta, over the 20% threshold.
+        LoadWatchlistVersion.Result result = withRecords(h, List.of(
+                record(1, "e-1", "Ahmed Yousef"),
+                record(2, "e-2", "Sara Ali")))
+                .execute(command(h, "sha256:truncated", ApprovalMode.NOT_REQUIRED));
+
+        assertThat(result.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.AWAITING_CONFIRMATION);
+        assertThat(h.listVersionRepository().findById(result.listVersionId()).orElseThrow().status())
+                .isEqualTo(LoadStatus.STAGED);
+        // The previous version is still the one serving.
+        assertThat(h.listVersionRepository().findActive(SOURCE_ID).orElseThrow().sourceFileChecksum())
+                .isEqualTo("sha256:baseline");
+        assertThat(h.auditEventPort().recorded())
+                .anySatisfy(e -> assertThat(e.eventType())
+                        .isEqualTo("ANOMALOUS_DELTA_AWAITING_CONFIRMATION"));
+    }
+
+    // A forgotten flag must behave like the careful choice, not the convenient one.
+    @Test
+    void theDefaultModeHoldsForAnOperatorJustAsBefore() {
+        TestHarness h = harness();
+        LoadWatchlistVersion.Result result = withRecords(h, List.of(record(1, "e-1", "Ahmed Yousef")),
+                expectingDobOnEveryRecord()).execute(command(h, "sha256:default"));
+
+        assertThat(result.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.AWAITING_CONFIRMATION);
+        assertThat(result.reviewNote()).isEmpty();
+        assertThat(h.listVersionRepository().findById(result.listVersionId()).orElseThrow()
+                        .approval().mode())
+                .isEqualTo(ApprovalMode.REQUIRED);
     }
 
     // Registers whatever the last load wrote as the "currently active" snapshot a real database

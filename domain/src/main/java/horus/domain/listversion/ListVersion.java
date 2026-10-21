@@ -20,11 +20,15 @@ public record ListVersion(
         String loadedBy,
         Optional<SourceCapabilities> capabilities,
         String pipelineVersion,
-        Optional<String> indexBinding) {
+        Optional<String> indexBinding,
+        LoadApproval approval) {
 
     public ListVersion {
         if (listVersionId == null) {
             throw new IllegalArgumentException("listVersionId must not be null");
+        }
+        if (approval == null) {
+            throw new IllegalArgumentException("approval must not be null (use LoadApproval.required())");
         }
         if (sourceId == null || sourceId.isBlank()) {
             throw new IllegalArgumentException("sourceId must not be blank");
@@ -71,13 +75,13 @@ public record ListVersion(
     public ListVersion withStatus(LoadStatus newStatus) {
         return new ListVersion(listVersionId, sourceId, formatId, mappingId, sourceFileName,
                 sourceFileChecksum, vendorPublishedAt, loadedAt, recordCount, newStatus, loadedBy,
-                capabilities, pipelineVersion, indexBinding);
+                capabilities, pipelineVersion, indexBinding, approval);
     }
 
     public ListVersion withCapabilities(SourceCapabilities newCapabilities) {
         return new ListVersion(listVersionId, sourceId, formatId, mappingId, sourceFileName,
                 sourceFileChecksum, vendorPublishedAt, loadedAt, recordCount, status, loadedBy,
-                Optional.ofNullable(newCapabilities), pipelineVersion, indexBinding);
+                Optional.ofNullable(newCapabilities), pipelineVersion, indexBinding, approval);
     }
 
     // record_count starts as a 0 placeholder at STAGE and is corrected once streaming finishes
@@ -86,7 +90,14 @@ public record ListVersion(
     public ListVersion withRecordCount(long newRecordCount) {
         return new ListVersion(listVersionId, sourceId, formatId, mappingId, sourceFileName,
                 sourceFileChecksum, vendorPublishedAt, loadedAt, newRecordCount, status, loadedBy,
-                capabilities, pipelineVersion, indexBinding);
+                capabilities, pipelineVersion, indexBinding, approval);
+    }
+
+    public ListVersion withReviewState(ReviewState newReviewState) {
+        return new ListVersion(listVersionId, sourceId, formatId, mappingId, sourceFileName,
+                sourceFileChecksum, vendorPublishedAt, loadedAt, recordCount, status, loadedBy,
+                capabilities, pipelineVersion, indexBinding,
+                new LoadApproval(approval.mode(), newReviewState));
     }
 
     public boolean isActive() {

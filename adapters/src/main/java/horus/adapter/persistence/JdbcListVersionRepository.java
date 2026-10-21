@@ -1,8 +1,11 @@
 package horus.adapter.persistence;
 
 import horus.application.port.ListVersionRepository;
+import horus.domain.listversion.ApprovalMode;
 import horus.domain.listversion.ListVersion;
+import horus.domain.listversion.LoadApproval;
 import horus.domain.listversion.LoadStatus;
+import horus.domain.listversion.ReviewState;
 import horus.domain.listversion.SourceCapabilities;
 import horus.domain.shared.CanonicalSlot;
 import horus.domain.shared.ListVersionId;
@@ -43,8 +46,9 @@ public final class JdbcListVersionRepository implements ListVersionRepository {
         jdbcTemplate.update(
                 "INSERT INTO list_version (list_version_id, source_id, format_id, mapping_id, "
                         + "source_file_name, source_file_checksum, vendor_published_at, loaded_at, "
-                        + "record_count, status, loaded_by, pipeline_version, index_binding) "
-                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                        + "record_count, status, loaded_by, pipeline_version, index_binding, "
+                        + "approval_mode, review_state) "
+                        + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 listVersion.listVersionId().value(),
                 listVersion.sourceId(),
                 listVersion.formatId(),
@@ -57,7 +61,9 @@ public final class JdbcListVersionRepository implements ListVersionRepository {
                 listVersion.status().name(),
                 listVersion.loadedBy(),
                 listVersion.pipelineVersion(),
-                listVersion.indexBinding().orElse(null));
+                listVersion.indexBinding().orElse(null),
+                listVersion.approval().mode().name(),
+                listVersion.approval().reviewState().name());
     }
 
     @Override
@@ -65,6 +71,13 @@ public final class JdbcListVersionRepository implements ListVersionRepository {
         jdbcTemplate.update(
                 "UPDATE list_version SET status = ? WHERE list_version_id = ?",
                 newStatus.name(), listVersionId.value());
+    }
+
+    @Override
+    public void updateReviewState(ListVersionId listVersionId, ReviewState newReviewState) {
+        jdbcTemplate.update(
+                "UPDATE list_version SET review_state = ? WHERE list_version_id = ?",
+                newReviewState.name(), listVersionId.value());
     }
 
     @Override
@@ -146,6 +159,9 @@ public final class JdbcListVersionRepository implements ListVersionRepository {
                 rs.getString("loaded_by"),
                 parseCapabilities(listVersionId, sourceId, rs.getString("capabilities")),
                 rs.getString("pipeline_version"),
-                Optional.ofNullable(indexBinding));
+                Optional.ofNullable(indexBinding),
+                new LoadApproval(
+                        ApprovalMode.valueOf(rs.getString("approval_mode")),
+                        ReviewState.valueOf(rs.getString("review_state"))));
     }
 }

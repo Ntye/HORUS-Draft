@@ -1,6 +1,7 @@
 package horus.bootstrap;
 
 import horus.adapter.source.worldcheck.WorldCheckAdapter;
+import horus.application.ingestion.AcknowledgeLoadReview;
 import horus.application.ingestion.ConfirmStagedVersion;
 import horus.application.ingestion.LoadProgress;
 import horus.application.ingestion.LoadWatchlistVersion;
@@ -83,6 +84,12 @@ public class IngestionConfig {
     public RollBackVersion rollBackVersion(
             ListVersionRepository listVersionRepository, RecordAuditEvent recordAuditEvent) {
         return new RollBackVersion(listVersionRepository, recordAuditEvent);
+    }
+
+    @Bean
+    public AcknowledgeLoadReview acknowledgeLoadReview(
+            ListVersionRepository listVersionRepository, RecordAuditEvent recordAuditEvent) {
+        return new AcknowledgeLoadReview(listVersionRepository, recordAuditEvent);
     }
 
     @Bean

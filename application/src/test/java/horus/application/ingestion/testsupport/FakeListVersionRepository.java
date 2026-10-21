@@ -3,6 +3,7 @@ package horus.application.ingestion.testsupport;
 import horus.application.port.ListVersionRepository;
 import horus.domain.listversion.ListVersion;
 import horus.domain.listversion.LoadStatus;
+import horus.domain.listversion.ReviewState;
 import horus.domain.listversion.SourceCapabilities;
 import horus.domain.shared.ListVersionId;
 import java.util.LinkedHashMap;
@@ -16,6 +17,14 @@ public final class FakeListVersionRepository implements ListVersionRepository {
     @Override
     public void save(ListVersion listVersion) {
         byId.put(listVersion.listVersionId(), listVersion);
+    }
+
+    @Override
+    public void updateReviewState(ListVersionId listVersionId, ReviewState newReviewState) {
+        ListVersion existing = byId.get(listVersionId);
+        if (existing != null) {
+            byId.put(listVersionId, existing.withReviewState(newReviewState));
+        }
     }
 
     @Override

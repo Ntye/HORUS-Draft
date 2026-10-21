@@ -3,6 +3,7 @@ package horus.application.ingestion;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import horus.domain.listversion.LoadApproval;
 import horus.application.ingestion.testsupport.FakeAuditEventPort;
 import horus.application.ingestion.testsupport.FakeIdGenerator;
 import horus.application.ingestion.testsupport.FakeIndexReconciliation;
@@ -24,7 +25,8 @@ class ConfirmStagedVersionTest {
     private static ListVersion listVersion(ListVersionId id, LoadStatus status) {
         return new ListVersion(id, "worldcheck", "worldcheck-xml-v1", Optional.empty(),
                 "wc.xml", "sha256:" + id.value(), Optional.empty(), Instant.parse("2026-09-21T00:00:00Z"),
-                0L, status, "svc-ingest", Optional.empty(), "1.0.0", Optional.empty());
+                0L, status, "svc-ingest", Optional.empty(), "1.0.0", Optional.empty(),
+                LoadApproval.required());
     }
 
     @Test

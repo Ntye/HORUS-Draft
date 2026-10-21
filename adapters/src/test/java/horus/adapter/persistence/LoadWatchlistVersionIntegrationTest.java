@@ -13,6 +13,7 @@ import horus.application.port.IndexReconciliation;
 import horus.application.port.ListVersionRepository;
 import horus.application.port.WatchEntityRepository;
 import horus.application.port.WatchEntityVersionWriter;
+import horus.domain.listversion.ApprovalMode;
 import horus.domain.listversion.LoadStatus;
 import horus.domain.shared.CanonicalSlot;
 import horus.domain.shared.EntityType;
@@ -168,7 +169,7 @@ class LoadWatchlistVersionIntegrationTest extends PostgresIntegrationSupport {
 
             LoadWatchlistVersion.Result first = loadWatchlistVersion.execute(new LoadWatchlistVersion.Command(
                     SOURCE_ID, new ByteArrayInputStream(tenRecords), "fixture-10.xml", checksum,
-                    Optional.empty(), "svc-ingest-test"));
+                    Optional.empty(), "svc-ingest-test", ApprovalMode.REQUIRED));
 
             assertThat(first.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.PROMOTED);
             assertThat(first.reconciliationReport().added()).isEqualTo(10);
@@ -180,7 +181,7 @@ class LoadWatchlistVersionIntegrationTest extends PostgresIntegrationSupport {
             // "Done when": loading the same fixture twice produces no new versions the second time.
             LoadWatchlistVersion.Result second = loadWatchlistVersion.execute(new LoadWatchlistVersion.Command(
                     SOURCE_ID, new ByteArrayInputStream(tenRecords), "fixture-10.xml", checksum,
-                    Optional.empty(), "svc-ingest-test"));
+                    Optional.empty(), "svc-ingest-test", ApprovalMode.REQUIRED));
 
             assertThat(second.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.ALREADY_LOADED);
             assertThat(second.listVersionId()).isEqualTo(first.listVersionId());
@@ -194,7 +195,7 @@ class LoadWatchlistVersionIntegrationTest extends PostgresIntegrationSupport {
             byte[] nineRecords = fixtureWithRecords(9);
             LoadWatchlistVersion.Result third = loadWatchlistVersion.execute(new LoadWatchlistVersion.Command(
                     SOURCE_ID, new ByteArrayInputStream(nineRecords), "fixture-9.xml",
-                    checksumOf(nineRecords), Optional.empty(), "svc-ingest-test"));
+                    checksumOf(nineRecords), Optional.empty(), "svc-ingest-test", ApprovalMode.REQUIRED));
 
             assertThat(third.reconciliationReport().delisted()).isEqualTo(1);
             assertThat(third.reconciliationReport().added()).isZero();
@@ -214,7 +215,7 @@ class LoadWatchlistVersionIntegrationTest extends PostgresIntegrationSupport {
             byte[] nineWithOneAmended = amended.getBytes(StandardCharsets.UTF_8);
             LoadWatchlistVersion.Result fourth = loadWatchlistVersion.execute(new LoadWatchlistVersion.Command(
                     SOURCE_ID, new ByteArrayInputStream(nineWithOneAmended), "fixture-9b.xml",
-                    checksumOf(nineWithOneAmended), Optional.empty(), "svc-ingest-test"));
+                    checksumOf(nineWithOneAmended), Optional.empty(), "svc-ingest-test", ApprovalMode.REQUIRED));
 
             assertThat(fourth.outcome()).isEqualTo(LoadWatchlistVersion.Outcome.PROMOTED);
             assertThat(fourth.reconciliationReport().added()).isZero();

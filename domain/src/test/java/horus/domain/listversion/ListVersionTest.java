@@ -26,7 +26,8 @@ class ListVersionTest {
                 "svc-ingest",
                 Optional.empty(),
                 "1.0.0",
-                Optional.empty());
+                Optional.empty(),
+                LoadApproval.required());
     }
 
     @Test
@@ -90,7 +91,8 @@ class ListVersionTest {
                 "svc-ingest",
                 Optional.empty(),
                 "1.0.0",
-                Optional.empty()))
+                Optional.empty(),
+                LoadApproval.required()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -110,7 +112,8 @@ class ListVersionTest {
                 "svc-ingest",
                 Optional.empty(),
                 "1.0.0",
-                Optional.empty()))
+                Optional.empty(),
+                LoadApproval.required()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -130,7 +133,8 @@ class ListVersionTest {
                 "svc-ingest",
                 Optional.empty(),
                 " ",
-                Optional.empty()))
+                Optional.empty(),
+                LoadApproval.required()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 
@@ -150,7 +154,8 @@ class ListVersionTest {
                 "svc-ingest",
                 Optional.empty(),
                 "1.0.0",
-                null))
+                null,
+                LoadApproval.required()))
                 .isInstanceOf(IllegalArgumentException.class);
     }
 }

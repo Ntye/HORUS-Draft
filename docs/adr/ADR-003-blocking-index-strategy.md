@@ -93,8 +93,72 @@ configuration read at boot (`HORUS_BLOCKING_TRIGRAM_THRESHOLD`, `HORUS_BLOCKING_
   that finds nothing is also `ERROR` (it cannot assert a clear).
 - **Risk to carry into the readiness review:** at 0.3 the trigram lookup alone may exceed the 500 ms
   KPI on the full feed. The levers, in order: measure on real data; raise the threshold to the
-  lowest value that still meets Compliance's blocking-recall floor; push the entity-status join
-  after the trigram filter; partition or pre-filter by entity type.
+  lowest value that still meets Compliance's blocking-recall floor; ~~push the entity-status join
+  after the trigram filter~~ (measured 2026-09-27 and **falsified** -- see below); partition or
+  pre-filter by entity type. **Measured 2026-09-27: the risk is real and the KPI is missed at the
+  shipped threshold.**
 - The `EXACT_HASH` and `PHONETIC` lookups order by version id, not relevance, so if they ever
   truncate the cut is arbitrary. Not observed at this scale; flagged.
 - To re-run the measurement: `docs/runbook/testing-guide.md` §11.
+
+## Measurement on the full feed — 2026-09-27
+
+The risk carried above is now measured. ACTIVE list: 5,990,394 entities, 10,570,243 names,
+3.1 GB of `watch_name` indexes, `shared_buffers=2GB`. Probe name invented, of a deliberately
+high-fanout shape. Warm cache, nothing else running, `EXPLAIN ANALYZE` so no row contents were read.
+
+**The other two strategies are not the problem.**
+
+| Strategy | Cold | Warm |
+|---|---|---|
+| `EXACT_HASH` (rare name) | 1.9 ms | 0.5 ms |
+| `EXACT_HASH` (common pattern) | 8.3 ms | 0.5 ms |
+| `PHONETIC` | 237.9 ms | 6.3 ms |
+
+**Trigram against the similarity threshold**, same probe, `LIMIT 501` as shipped:
+
+| Threshold | Name rows scanned | Latency | NFR-001 p95 (500 ms) |
+|---|---|---|---|
+| **0.30 — as shipped** | 37,410 | **1,444 ms** | **fails, 2.9x over** |
+| 0.40 | 9,620 | 779 ms | fails |
+| 0.50 | 2,260 | 493 ms | meets, with no headroom |
+| 0.60 | 596 | 308 ms | meets |
+
+A rare, high-entropy name at 0.45 took 85 ms, so the ADR's guess above — that real query names have
+far higher entropy and will be cheaper — holds. The failure is specific to common name patterns, which
+are exactly the ones a screening system cannot afford to be slow on.
+
+**Lever 3 is falsified.** "Push the entity-status join after the trigram filter" does not work, because
+the screenability view is not the cost:
+
+| Variant | Latency |
+|---|---|
+| As shipped (join inside) | 1,444 ms |
+| Trigram scan alone, no screenability join at all | 1,483 ms |
+| Join applied after the trigram top-N (the proposed remedy) | **1,744 ms** |
+
+Removing the join entirely saves nothing, and applying it after the top-N is 21% *slower* — the CTE
+materialises and loses the parallel plan the shipped query gets. The cost is the trigram scan itself:
+37,410 rows fetched from a 7.2 GB heap with `similarity()` computed on each. Lever 3 should be struck
+from the list rather than carried forward as an option.
+
+**What this leaves.** The threshold is the only measured lever, and it trades directly against recall —
+which is the one trade I-2 forbids making blind. Raising 0.30 to 0.50 buys a 2.9x latency improvement
+and costs an unknown amount of recall. **That number does not exist**, because blocking recall on real
+data needs a labelled corpus and none has been built (D12 B-1).
+
+Two things make this less grim than it looks, both untested:
+
+1. **Blocking is a union.** Recall lost by raising the trigram threshold may be recovered by
+   `EXACT_HASH` and `PHONETIC`, which cost 0.5 ms and 6.3 ms. The union's recall at threshold 0.55
+   could equal its recall at 0.30. Per-strategy recall is what settles it, and
+   `MeasureBlockingRecall` already reports exactly that.
+2. **`shared_buffers=2GB` against 3.1 GB of indexes on a 7.2 GB table.** The dominant cost is the
+   bitmap heap fetch, and the host has 31.5 GB. Raising `shared_buffers` is an operational lever that
+   costs no recall at all, and it has not been tried.
+
+**Do not raise the threshold to meet the latency KPI until the recall curve exists.** That would be
+buying a measurable number with an unmeasured one, in the direction I-2 names as a regulatory breach
+rather than a cost.
+
+To re-run: `docs/runbook/testing-guide.md` §11.

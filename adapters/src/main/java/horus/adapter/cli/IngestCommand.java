@@ -16,6 +16,7 @@ import java.util.Optional;
 import java.util.concurrent.Callable;
 import org.springframework.stereotype.Component;
 import picocli.CommandLine.Command;
+import horus.domain.listversion.ApprovalMode;
 import picocli.CommandLine.Option;
 
 // CLAUDE.md §8: `bootRun --args="ingest --source=worldcheck"`, reading HORUS_FEED_PATH. Reads
@@ -32,6 +33,13 @@ public final class IngestCommand implements Callable<Integer> {
 
     @Option(names = "--source", required = true, description = "Registered source id, e.g. worldcheck")
     private String sourceId;
+
+    @Option(names = "--approval", defaultValue = "REQUIRED",
+            description = "REQUIRED (default): a capability deviation holds the load for an operator "
+                    + "decision. NOT_REQUIRED: for a scheduled run -- a capability deviation is waived, "
+                    + "the load promotes, and it is marked as owing a review. Neither value waives an "
+                    + "integrity failure or the anomalous-delta hold.")
+    private ApprovalMode approvalMode;
 
     private final LoadWatchlistVersion loadWatchlistVersion;
 
@@ -51,7 +59,8 @@ public final class IngestCommand implements Callable<Integer> {
 
         try (InputStream in = Files.newInputStream(path)) {
             LoadWatchlistVersion.Result result = loadWatchlistVersion.execute(new LoadWatchlistVersion.Command(
-                    sourceId, in, path.getFileName().toString(), checksum, Optional.empty(), operator()));
+                    sourceId, in, path.getFileName().toString(), checksum, Optional.empty(), operator(),
+                    approvalMode));
             printReport(result);
             return switch (result.outcome()) {
                 case PROMOTED, ALREADY_LOADED -> 0;
@@ -83,6 +92,14 @@ public final class IngestCommand implements Callable<Integer> {
                 + " rejected=" + report.rejected().size());
         printRejectionReasons(report);
         result.failureReason().ifPresent(reason -> System.out.println("failureReason: " + reason));
+        // A waived deviation is the one case where a PROMOTED load still has something to say.
+        // Printed loudly, because the scheduled job's log is where an operator will see it first.
+        result.reviewNote().ifPresent(note -> {
+            System.out.println("REVIEW REQUIRED: " + note);
+            System.out.println("  this load was promoted unreviewed under --approval=NOT_REQUIRED");
+            System.out.println("  acknowledge with: horus acknowledge-review --list-version-id="
+                    + result.listVersionId().value() + " --reason=\"...\"");
+        });
     }
 
     // Without this the report says only HOW MANY records failed. The first real load of the real
