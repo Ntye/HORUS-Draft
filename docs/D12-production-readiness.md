@@ -318,6 +318,8 @@ reports per-strategy recall, which is exactly what settles it; (b) `shared_buffe
 fetch. **Do not raise the threshold to meet the latency KPI before the recall curve exists** — that
 buys a measured number with an unmeasured one, in the direction I-2 calls a regulatory breach rather
 than a cost.
+The order of these experiments, the further options if they fail (an in-memory or embedded
+Lucene index) and the selection criteria are in ADR-003, revision 2026-10-21.
 
 ### H-7 CI has never executed
 The workflow exists and third-party actions are now SHA-pinned, but no push has run it. All three
